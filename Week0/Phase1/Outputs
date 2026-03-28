@@ -1,0 +1,49 @@
+This is the output file for 
+1)pyspark sql pretraining phase1 revised simple pack:
+
+1)customers.show()
++-----------+-------------+---------+---+
+|customer_id|customer_name|     city|age|
++-----------+-------------+---------+---+
+|          1|         Ravi|Hyderabad| 25|
+|          2|         Sita|  Chennai| 32|
+|          3|         Arun|Hyderabad| 28|
+|          4|        Meena|Bengaluru| 35|
+|          5|        Kiran|  Chennai| 22|
++-----------+-------------+---------+---+
+2)customers.filter(customers.city == "Chennai").show()
++-----------+-------------+-------+---+
+|customer_id|customer_name|   city|age|
++-----------+-------------+-------+---+
+|          2|         Sita|Chennai| 32|
+|          5|        Kiran|Chennai| 22|
++-----------+-------------+-------+---+
+
+3)customers.filter(customers.age > 25).show()
++-----------+-------------+---------+---+
+|customer_id|customer_name|     city|age|
++-----------+-------------+---------+---+
+|          2|         Sita|  Chennai| 32|
+|          3|         Arun|Hyderabad| 28|
+|          4|        Meena|Bengaluru| 35|
++-----------+-------------+---------+---+
+
+4)customers.select("customer_name", "city").show()
++-------------+---------+
+|customer_name|     city|
++-------------+---------+
+|         Ravi|Hyderabad|
+|         Sita|  Chennai|
+|         Arun|Hyderabad|
+|        Meena|Bengaluru|
+|        Kiran|  Chennai|
++-------------+---------+
+
+5)customers.groupBy("city").count().show()
++---------+-----+
+|     city|count|
++---------+-----+
+|  Chennai|    2|
+|Hyderabad|    2|
+|Bengaluru|    1|
++---------+-----+
