@@ -24,3 +24,34 @@ sales = spark.read.format('csv').option('header', 'true').load('/samples/sales.c
 repeat_customers = sales.groupBy("customer_id").agg(count("sale_id").alias("order_count")) .filter("order_count > 2")
 repeat_customers.show()
 
+
+4----->
+# Initialize Spark session
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import count
+from pyspark.sql.functions import col, sum
+from pyspark.sql.functions import concat_ws
+
+spark = SparkSession.builder.appName('Spark Playground').getOrCreate()
+
+# Load the customers.csv dataset
+customers =spark.read.format('csv').option('header', 'true').load('/samples/customers.csv')
+sales = spark.read.format('csv').option('header', 'true').load('/samples/sales.csv')
+customer_totals = customers.join(sales, "customer_id") .withColumn("total_amount", col("total_amount")).withColumn("cus_name", concat_ws(" ", col("first_name"), col("last_name")).alias("cus_name")).groupBy( "cus_name", "city") .agg(sum("total_amount").alias("amount")) 
+display(customer_totals)
+
+5--->
+# Initialize Spark session
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import count, sum
+
+
+spark = SparkSession.builder.appName('Spark Playground').getOrCreate()
+
+#df = spark.read.format('csv').option('header', 'true').load('/samples/customers.csv')
+customers =spark.read.format('csv').option('header', 'true').load('/samples/customers.csv')
+sales = spark.read.format('csv').option('header', 'true').load('/samples/sales.csv')
+
+final_report = sales .join(customers, "customer_id") .groupBy("customer_id", "first_name", "last_name", "city") .agg(sum("total_amount").alias("total_spend"), count("sale_id").alias("order_count") )
+
+final_report.show()
