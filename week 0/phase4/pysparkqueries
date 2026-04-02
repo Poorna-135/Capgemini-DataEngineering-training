@@ -22,3 +22,9 @@ sales = sales.dropna(subset=["customer_id"]) .dropDuplicates(["sale_id"]) .filte
 #task1
 daily_sales = sales.groupBy("sale_date") .agg(F.sum("total_amount").alias("total_sales"))
 display(daily_sales)
+
+#task2
+city_revenue = sales.join(customers, "customer_id") .groupBy("city") .agg(F.sum("total_amount").alias("total_revenue"))
+display(city_revenue)
+
+
