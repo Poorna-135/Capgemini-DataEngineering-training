@@ -1,0 +1,24 @@
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+# 1. Initialize Spark Session
+spark = SparkSession.builder .appName("Phase4_Business_Pipeline") .getOrCreate()
+
+# 2. Load Data
+customers = spark.read.format("csv").option("header", "true") .option("inferSchema", "true") .load("/samples/customers.csv")
+
+sales = spark.read.format("csv") .option("header", "true") .option("inferSchema", "true") .load("/samples/sales.csv")
+
+customers.filter(F.col("customer_id").isNull())
+
+#3 data Cleaning
+
+customers = customers.dropna(subset=["customer_id"]).dropDuplicates(["customer_id"])
+#customer_id	first_name	last_name	email	phone_number	address	city	state	zip_code
+
+sales = sales.dropna(subset=["customer_id"]) .dropDuplicates(["sale_id"]) .filter(F.col("total_amount") > 0)
+#sale_id	customer_id	product_id	sale_date	quantity	total_amount
+
+#task1
+daily_sales = sales.groupBy("sale_date") .agg(F.sum("total_amount").alias("total_sales"))
+display(daily_sales)
