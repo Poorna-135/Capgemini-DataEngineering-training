@@ -27,4 +27,31 @@ display(daily_sales)
 city_revenue = sales.join(customers, "customer_id") .groupBy("city") .agg(F.sum("total_amount").alias("total_revenue"))
 display(city_revenue)
 
+#task33
+customers = customers.withColumn("customer_name",F.concat_ws(" ", F.col("first_name"), F.col("last_name")))
+#display(customers)
+top_customers = sales.join(customers, "customer_id").groupBy("customer_name").agg(F.sum("total_amount").alias("total_spend")).orderBy(F.desc("total_spend")).limit(5)
+display(top_customers)
+
+#task4
+repeat_customers = sales.groupBy("customer_id").agg(F.count("sale_id").alias("order_count")).filter(F.col("order_count") > 1)
+display(repeat_customers)
+
+#task5
+
+#created a new table with customer id and total spend
+customer_spend = sales.groupBy("customer_id").agg(F.sum("total_amount").alias("total_spend"))
+#display(customer_spend)
+
+#Customer Segmentation
+segmentation = customer_spend.join(customers, "customer_id") .withColumn("segment", F.when(F.col("total_spend") > 1000, "Gold")
+     .when((F.col("total_spend") >= 50) & (F.col("total_spend") <= 100), "Silver")
+     .otherwise("Bronze")
+    )
+display(segmentation)
+
+#task6
+final_df = segmentation.join(
+    repeat_customers, "customer_id", "left").fillna({"order_count": 1}) .select("customer_name", "city", "total_spend", "order_count", "segment")
+display(final_df)
 
